@@ -1,0 +1,9 @@
+edu\asu\cse564\appealsserver\models\Grade.class
+edu\asu\cse564\appealsserver\resources\GradeResource.class
+edu\asu\cse564\appealsserver\storage\GradesStorage.class
+edu\asu\cse564\appealsserver\utilities\UriHelper.class
+edu\asu\cse564\appealsserver\resources\AppealResource.class
+edu\asu\cse564\appealsserver\representation\Representation.class
+edu\asu\cse564\appealsserver\storage\AppealsStorage.class
+edu\asu\cse564\appealsserver\representation\Link.class
+edu\asu\cse564\appealsserver\representation\GradeRepresentation.class
