@@ -21,6 +21,7 @@ import edu.asu.cse564.appealsserver.representation.Representation;
 import edu.asu.cse564.appealsserver.utilities.UriHelper;
 import java.util.ArrayList;
 import java.util.List;
+import javax.ws.rs.Consumes;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -53,7 +54,7 @@ public class AppealResource {
 
     @GET
     @Path("/{studentName}")
-    @Produces("application/vnd-cse564-appeals+xml")
+    @Produces(Representation.APPEALS_MEDIA_TYPE)
     public Response getAppeal(@PathParam("studentName") String studentName) {
         //LOG.info("Retrieving an grade resource");
 
@@ -81,6 +82,8 @@ public class AppealResource {
 
     @POST
     @Path("/{studentName}")
+    @Consumes(Representation.APPEALS_MEDIA_TYPE)
+    @Produces(Representation.APPEALS_MEDIA_TYPE)
     public Response appealGrades(@PathParam("studentName") String studentName, String message) {
         Response response;
         try {
@@ -104,6 +107,7 @@ public class AppealResource {
 
     @PUT
     @Path("/{studentName}")
+    @Consumes(Representation.APPEALS_MEDIA_TYPE)
     public Response setAppealStatus(@PathParam("studentName") String studentName, String message) {
         Response response;
         try {

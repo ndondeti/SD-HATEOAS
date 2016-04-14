@@ -12,7 +12,7 @@ import java.util.List;
  * @author Vivek
  */
 public abstract class Representation {
-    public static final String APPEALS_MEDIA_TYPE = "application/vnd-cse564-appeals+xml";
+    public static final String APPEALS_MEDIA_TYPE = "application/vnd-cse564-appeals+json";
     public static final String SELF_REL_VALUE = "self";
     /*public static final String RESTBUCKS_NAMESPACE = "http://schemas.restbucks.com";
     public static final String DAP_NAMESPACE = RESTBUCKS_NAMESPACE + "/dap";*/

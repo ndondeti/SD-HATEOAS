@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -48,7 +49,7 @@ public class GradeResource {
 
     @GET
     @Path("/{studentName}")
-    //@Produces("application/vnd-cse564-appeals+xml")
+    @Produces(Representation.APPEALS_MEDIA_TYPE)
     public Response getGrade(@PathParam("studentName") String studentName) {
         //LOG.info("Retrieving an grade resource");
 
@@ -76,7 +77,7 @@ public class GradeResource {
     
     @POST
     @Path("/{studentName}")
-    //@Produces("application/vnd-cse564-appeals+xml")
+    @Consumes(Representation.APPEALS_MEDIA_TYPE)
     public Response addGrade(@PathParam("studentName") String studentName, String message) {
         //LOG.info("Retrieving an grade resource");
 
