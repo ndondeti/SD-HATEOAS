@@ -58,7 +58,7 @@ public class GradeResource {
         try {
             Grade grade = gradeStorage.getGrade(studentName);
             if (grade == null) {
-                response = Response.status(Response.Status.FORBIDDEN).build();
+                response = Response.status(Response.Status.NOT_FOUND).build();
             } else {
                 List<Link> links = getLinksForGetGrade(studentName);
                 GradeRepresentation gradeRepresentation = new GradeRepresentation(grade, links);
@@ -85,7 +85,7 @@ public class GradeResource {
 
         try {
             Grade grade = gson.fromJson(message, Grade.class);
-            if (grade == null) {
+            if (grade == null || grade.getFeedback() == null || grade.getGrade() < 0) {
                 response = Response.status(Response.Status.BAD_REQUEST).build();
             } else {
                 gradeStorage.addGrade(studentName, grade);

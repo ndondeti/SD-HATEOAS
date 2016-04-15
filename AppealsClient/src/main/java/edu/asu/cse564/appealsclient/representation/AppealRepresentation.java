@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.asu.cse564.appealsserver.representation;
+package edu.asu.cse564.appealsclient.representation;
 
 import java.util.List;
-import edu.asu.cse564.appealsserver.models.Appeal;
+import edu.asu.cse564.appealsclient.models.Appeal;
 
 /**
  *
@@ -28,19 +28,19 @@ public class AppealRepresentation extends Representation {
     public void setAppeals(Appeal appeals) {
         this.appeal = appeals;
     }
-    
+
     public Link getGradeLink() {
         return getLinkByName("getGrade");
     }
-    
+
     public Link getSelfLink() {
         return getLinkByName("self");
     }
-    
+
     public Link getAppealLink() {
         return getLinkByName("getAppeal");
     }
-    
+
     public Link getUpdateStatusLink() {
         return getLinkByName("setAppealStatus");
     }

@@ -15,12 +15,14 @@ import javax.ws.rs.core.UriInfo;
 
 import edu.asu.cse564.appealsserver.storage.AppealsStorage;
 import edu.asu.cse564.appealsserver.models.Appeal;
+import edu.asu.cse564.appealsserver.representation.AllAppealResponseMessage;
 import edu.asu.cse564.appealsserver.representation.AppealRepresentation;
 import edu.asu.cse564.appealsserver.representation.Link;
 import edu.asu.cse564.appealsserver.representation.Representation;
 import edu.asu.cse564.appealsserver.utilities.UriHelper;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.ws.rs.Consumes;
 
 import javax.ws.rs.GET;
@@ -50,6 +52,33 @@ public class AppealResource {
 
     public AppealResource() {
         gson = new Gson();
+    }
+
+    @GET
+    @Path("/allAppeals")
+    @Produces(Representation.APPEALS_MEDIA_TYPE)
+    public Response getAllAppeals() {
+        Response response;
+        try {
+            Set<String> keys = appealsStorage.getAllAppeals();
+            if (keys == null) {
+                response = Response.status(Response.Status.NO_CONTENT).build();
+            } else {
+                ArrayList<AppealRepresentation> allAppeals = new ArrayList<>();
+                for (String student : keys) {
+                    Appeal appeal = appealsStorage.getAppeal(student);
+                    List<Link> links = getLinkForAppealWhenTeacherViews(student);
+                    allAppeals.add(new AppealRepresentation(appeal, links));
+                }
+                AllAppealResponseMessage responseMessage = new AllAppealResponseMessage(allAppeals);
+                String message = gson.toJson(responseMessage);
+                response = Response.status(Response.Status.OK).entity(message).build();
+            }
+        } catch (Exception ex) {
+            //LOG.debug("Something went wrong retriveing the Order");
+            response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+        return response;
     }
 
     @GET
@@ -90,12 +119,16 @@ public class AppealResource {
             Appeal existingAppeal = appealsStorage.getAppeal(studentName);
             if (existingAppeal == null) {
                 Appeal appeal = gson.fromJson(message, Appeal.class);
-                appeal.setStatus(AppealStatus.UnderReview);
-                appealsStorage.addAppeal(studentName, appeal);
-                List<Link> links = getLinksForAppealGrades(studentName);
-                AppealRepresentation appealRepresentation = new AppealRepresentation(appeal, links);
-                String reesponseMessage = gson.toJson(appealRepresentation);
-                response = Response.status(Response.Status.CREATED).entity(reesponseMessage).build();
+                if (appeal != null || appeal.getAppeals() != null) {
+                    appeal.setStatus(AppealStatus.UnderReview);
+                    appealsStorage.addAppeal(studentName, appeal);
+                    List<Link> links = getLinksForAppealGrades(studentName);
+                    AppealRepresentation appealRepresentation = new AppealRepresentation(appeal, links);
+                    String reesponseMessage = gson.toJson(appealRepresentation);
+                    response = Response.status(Response.Status.CREATED).entity(reesponseMessage).build();
+                } else {
+                    response = Response.status(Response.Status.BAD_REQUEST).build();
+                }
             } else {
                 response = Response.status(Response.Status.FORBIDDEN).entity("AppealExists").build();
             }
@@ -114,8 +147,12 @@ public class AppealResource {
             Appeal existingAppeal = appealsStorage.getAppeal(studentName);
             if (existingAppeal != null) {
                 Appeal appeal = gson.fromJson(message, Appeal.class);
-                existingAppeal.setStatus(appeal.getStatus());
-                response = Response.status(Response.Status.OK).build();
+                if (appeal == null || appeal.getStatus() == null) {
+                    response = Response.status(Response.Status.BAD_REQUEST).build();
+                } else {
+                    existingAppeal.setStatus(appeal.getStatus());
+                    response = Response.status(Response.Status.OK).build();
+                }
             } else {
                 response = Response.status(Response.Status.FORBIDDEN).build();
             }
@@ -153,6 +190,23 @@ public class AppealResource {
         Link link = new Link();
         link.setMediaType(Representation.APPEALS_MEDIA_TYPE);
         link.setRel("getAppeal");
+        String appealsUri = UriHelper.getBaseUri(uriInfo.getRequestUri()) + "/appeal/" + studentName;
+        link.setUri(appealsUri);
+        links.add(link);
+
+        link = new Link();
+        link.setMediaType(Representation.APPEALS_MEDIA_TYPE);
+        link.setRel(Representation.SELF_REL_VALUE);
+        link.setUri(uriInfo.getRequestUri().toString());
+        links.add(link);
+        return links;
+    }
+
+    private List<Link> getLinkForAppealWhenTeacherViews(String studentName) {
+        List<Link> links = new ArrayList<>();
+        Link link = new Link();
+        link.setMediaType(Representation.APPEALS_MEDIA_TYPE);
+        link.setRel("setAppealStatus");
         String appealsUri = UriHelper.getBaseUri(uriInfo.getRequestUri()) + "/appeal/" + studentName;
         link.setUri(appealsUri);
         links.add(link);

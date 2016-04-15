@@ -6,7 +6,9 @@
 package edu.asu.cse564.appealsserver.storage;
 
 import edu.asu.cse564.appealsserver.models.Appeal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 
 /**
@@ -31,5 +33,9 @@ public class AppealsStorage {
     
     public void deleteAppeal(String studentName){
         appeals.remove(studentName);
+    }
+    
+    public Set getAllAppeals(){
+        return appeals.keySet();
     }
 }

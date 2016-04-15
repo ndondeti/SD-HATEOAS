@@ -3,7 +3,11 @@ edu\asu\cse564\appealsserver\resources\GradeResource.class
 edu\asu\cse564\appealsserver\storage\GradesStorage.class
 edu\asu\cse564\appealsserver\utilities\UriHelper.class
 edu\asu\cse564\appealsserver\resources\AppealResource.class
+edu\asu\cse564\appealsserver\models\Appeal.class
+edu\asu\cse564\appealsserver\models\AppealStatus.class
+edu\asu\cse564\appealsserver\representation\AllAppealResponseMessage.class
 edu\asu\cse564\appealsserver\representation\Representation.class
 edu\asu\cse564\appealsserver\storage\AppealsStorage.class
 edu\asu\cse564\appealsserver\representation\Link.class
 edu\asu\cse564\appealsserver\representation\GradeRepresentation.class
+edu\asu\cse564\appealsserver\representation\AppealRepresentation.class

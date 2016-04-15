@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.asu.cse564.appealsserver.representation;
+package edu.asu.cse564.appealsclient.representation;
 
-import edu.asu.cse564.appealsserver.models.Grade;
+import edu.asu.cse564.appealsclient.models.Grade;
 import java.util.List;
 
 /**
@@ -32,5 +32,9 @@ public class GradeRepresentation extends Representation{
     
     public Link getSelfLink() {
         return getLinkByName("self");
+    }
+    
+    public void print(){
+        System.out.println();
     }
 }
