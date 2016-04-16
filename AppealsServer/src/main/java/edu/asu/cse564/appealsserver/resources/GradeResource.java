@@ -11,12 +11,14 @@ import edu.asu.cse564.appealsserver.representation.GradeRepresentation;
 import edu.asu.cse564.appealsserver.representation.Link;
 import edu.asu.cse564.appealsserver.representation.Representation;
 import edu.asu.cse564.appealsserver.storage.GradesStorage;
+import edu.asu.cse564.appealsserver.storage.AppealsStorage;
 import edu.asu.cse564.appealsserver.utilities.UriHelper;
 import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -38,10 +40,14 @@ public class GradeResource {
     //private static final Logger LOG = Logger.getLogger(GradeResource.class);
     private @Context
     UriInfo uriInfo;
-
+    private int appealId = 0;
     @Inject
     private GradesStorage gradeStorage;
+    @Inject
+    private AppealsStorage appealsStorage;
+
     private Gson gson;
+
     public GradeResource() {
         //LOG.info("GradeResource constructor");
         gson = new Gson();
@@ -60,7 +66,7 @@ public class GradeResource {
             if (grade == null) {
                 response = Response.status(Response.Status.NOT_FOUND).build();
             } else {
-                List<Link> links = getLinksForGetGrade(studentName);
+                List<Link> links = getLinksForGetGrade(grade.getAppealId());
                 GradeRepresentation gradeRepresentation = new GradeRepresentation(grade, links);
                 String message = gson.toJson(gradeRepresentation);
                 response = Response.status(Response.Status.OK).entity(message).build();
@@ -74,7 +80,7 @@ public class GradeResource {
             return response;
         }
     }
-    
+
     @POST
     @Path("/{studentName}")
     @Consumes(Representation.APPEALS_MEDIA_TYPE)
@@ -88,6 +94,8 @@ public class GradeResource {
             if (grade == null || grade.getFeedback() == null || grade.getGrade() < 0) {
                 response = Response.status(Response.Status.BAD_REQUEST).build();
             } else {
+                grade.setAppealId(Integer.toString(++appealId));
+                appealsStorage.addAppeal(grade.getAppealId(), null);
                 gradeStorage.addGrade(studentName, grade);
                 response = Response.status(Response.Status.CREATED).build();
             }
@@ -100,6 +108,21 @@ public class GradeResource {
             return response;
         }
     }
+    
+    @DELETE
+    @Path("/all")
+    public Response clearServer(){
+        Response response = null;
+        try{
+        appealsStorage.clearAppealsStorage();
+        gradeStorage.clearGradeStorage();
+        response = Response.status(Response.Status.OK).build();
+        } catch(Exception ex) {
+            response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } finally {
+            return response;
+        }
+    }
 
     private List<Link> getLinksForGetGrade(String studentName) {
         List<Link> links = new ArrayList<Link>();
@@ -107,15 +130,16 @@ public class GradeResource {
         appealLink.setMediaType(Representation.APPEALS_MEDIA_TYPE);
         appealLink.setRel("postAppeal");
         String appealsUri = UriHelper.getBaseUri(uriInfo.getRequestUri()) + "/appeal/" + studentName;
-        appealLink.setUri(appealsUri);        
+        appealLink.setUri(appealsUri);
         links.add(appealLink);
-        
+
         appealLink = new Link();
         appealLink.setMediaType(Representation.APPEALS_MEDIA_TYPE);
-        appealLink.setRel(Representation.SELF_REL_VALUE );
+        appealLink.setRel(Representation.SELF_REL_VALUE);
         appealLink.setUri(uriInfo.getRequestUri().toString());
         links.add(appealLink);
-        
+
         return links;
     }
+
 }

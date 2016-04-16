@@ -20,7 +20,6 @@ public class GradesStorage {
 
     public GradesStorage() {
         studentGradeMap = new HashMap<>();
-        setupGrades();
     }
     
     public Grade getGrade(String studentName){
@@ -34,15 +33,7 @@ public class GradesStorage {
         studentGradeMap.put(studentName, grade);
     }
     
-    private void setupGrades(){
-        Grade grade = new Grade();
-        grade.setFeedback("Have Not attempted question number 5");
-        grade.setGrade(80.0);
-        studentGradeMap.put("TestStudent1", grade);
-        Grade grade2 = new Grade();
-        grade2.setFeedback("Wrong answer for question number 4");
-        grade2.setGrade(75.0);
-        studentGradeMap.put("TestStudent2", grade2);
-        
+    public void clearGradeStorage(){
+        studentGradeMap = new HashMap<>();
     }
 }

@@ -32,6 +32,22 @@ public class AppealsHttpClient {
         gson = new Gson();
     }
 
+    public void updateGrade(Grade grade, URI updateGradeUri) throws Exception {
+        Client client = Client.create();
+        String gradeMessage = gson.toJson(grade);
+        ClientResponse response = client.resource(updateGradeUri)
+                .type(RESTBUCKS_MEDIA_TYPE)
+                .post(ClientResponse.class, gradeMessage);
+        if (response.getStatus() == Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()) {
+            throw new Exception("The server returned internal server error while adding grade");
+        } else if (response.getStatus() == Response.Status.BAD_REQUEST.getStatusCode()) {
+            throw new Exception("The grade sent was not a valid");
+        } else if (response.getStatus() == Response.Status.CREATED.getStatusCode()) {
+            return;
+        }
+        throw new RuntimeException(String.format("Unexpected response [%d] while updating grade resource [%s]", response.getStatus(), updateGradeUri.toString()));
+    }
+
     public void addGrade(Grade grade, String student) throws Exception {
         Client client = Client.create();
         URI addGradeUri = new URI(ENTRY_POINT_URI + student);
@@ -46,7 +62,7 @@ public class AppealsHttpClient {
         } else if (response.getStatus() == Response.Status.CREATED.getStatusCode()) {
             return;
         }
-        throw new RuntimeException(String.format("Unexpected response [%d] while grade resource [%s]", response.getStatus(), addGradeUri.toString()));
+        throw new RuntimeException(String.format("Unexpected response [%d] while adding grade resource [%s]", response.getStatus(), addGradeUri.toString()));
     }
 
     public GradeRepresentation getGrade(URI getGradeUri) throws Exception {
@@ -82,7 +98,7 @@ public class AppealsHttpClient {
         }
         throw new RuntimeException(String.format("Unexpected response [%d] while getting appeal resource [%s]", response.getStatus(), getAppealUri.toString()));
     }
-    
+
     public AppealRepresentation makeAppeal(Appeal appeal, URI makeAppealUri) throws Exception {
         Client client = Client.create();
         String appealMessage = gson.toJson(appeal);
@@ -92,20 +108,21 @@ public class AppealsHttpClient {
         int status = response.getStatus();
         if (status == Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()) {
             throw new Exception("The server returned internal server error while adding grade");
+        } else if (status == Response.Status.NOT_FOUND.getStatusCode()) {
+            throw new Exception("The appealId you used for the grade is wrong");
         } else if (status == Response.Status.BAD_REQUEST.getStatusCode()) {
             throw new Exception("The appeal sent was not a valid");
         } else if (status == Response.Status.FORBIDDEN.getStatusCode()) {
             throw new Exception("You have already made an appeal");
-        }
-        else if (status == Response.Status.CREATED.getStatusCode()) {
+        } else if (status == Response.Status.CREATED.getStatusCode()) {
             String message = response.getEntity(String.class);
             AppealRepresentation appealRepresentation = gson.fromJson(message, AppealRepresentation.class);
             return appealRepresentation;
         }
-        throw new RuntimeException(String.format("Unexpected response [%d] while getting appeal resource [%s]", response.getStatus(), makeAppealUri.toString()));
+        throw new RuntimeException(String.format("Unexpected response [%d] while making an appeal via resource [%s]", response.getStatus(), makeAppealUri.toString()));
     }
-    
-    public void setAppealStatus (Appeal appeal, URI appealUri) throws Exception{
+
+    public void setAppealStatus(Appeal appeal, URI appealUri) throws Exception {
         Client client = Client.create();
         String appealMessage = gson.toJson(appeal);
         ClientResponse response = client.resource(appealUri)
@@ -116,14 +133,13 @@ public class AppealsHttpClient {
             throw new Exception("The server returned internal server error while adding grade");
         } else if (status == Response.Status.BAD_REQUEST.getStatusCode()) {
             throw new Exception("The appeal sent was not a valid");
-        } 
-        else if (status == Response.Status.OK.getStatusCode()) {
+        } else if (status == Response.Status.OK.getStatusCode()) {
             return;
         }
-        throw new RuntimeException(String.format("Unexpected response [%d] while getting appeal resource [%s]", response.getStatus(), appealUri.toString()));
+        throw new RuntimeException(String.format("Unexpected response [%d] while setting appeal status via resource [%s]", response.getStatus(), appealUri.toString()));
     }
-    
-    public AllAppealResponseMessage getAllAppeals() throws Exception{
+
+    public AllAppealResponseMessage getAllAppeals() throws Exception {
         Client client = Client.create();
         URI allAppealsUri = new URI("http://localhost:8080/AppealsServer/CSE564/appeal/allAppeals");
         ClientResponse response = client.resource(allAppealsUri).accept(RESTBUCKS_MEDIA_TYPE).get(ClientResponse.class);
@@ -137,6 +153,19 @@ public class AppealsHttpClient {
             AllAppealResponseMessage responseMessage = gson.fromJson(message, AllAppealResponseMessage.class);
             return responseMessage;
         }
-        throw new RuntimeException(String.format("Unexpected response [%d] while getting appeal resource [%s]", response.getStatus(), allAppealsUri.toString()));
+        throw new RuntimeException(String.format("Unexpected response [%d] while getting all appeal via uri [%s]", response.getStatus(), allAppealsUri.toString()));
+    }
+    
+    public void clearServer() throws Exception {
+        Client client = Client.create();
+        URI clearServer = new URI("http://localhost:8080/AppealsServer/CSE564/grade/all");
+        ClientResponse response = client.resource(clearServer).delete(ClientResponse.class);
+        int status = response.getStatus();
+        if (status == Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()) {
+            throw new Exception("The server returned internal server error while adding grade");
+        } else if (status == Response.Status.OK.getStatusCode()) {
+            return;
+        }
+        throw new RuntimeException(String.format("Unexpected response [%d] while getting all appeal via uri [%s]", response.getStatus(), clearServer.toString()));
     }
 }

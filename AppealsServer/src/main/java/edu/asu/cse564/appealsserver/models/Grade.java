@@ -10,7 +10,7 @@ package edu.asu.cse564.appealsserver.models;
  * @author Vivek
  */
 public class Grade {
-
+    private String appealId;
     private String feedback;
     private double grade;
 
@@ -30,4 +30,13 @@ public class Grade {
     public void setGrade(double grade) {
         this.grade = grade;
     }
+
+    public String getAppealId() {
+        return appealId;
+    }
+
+    public void setAppealId(String appealId) {
+        this.appealId = appealId;
+    }
+    
 }

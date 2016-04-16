@@ -9,6 +9,7 @@ package edu.asu.cse564.appealsclient.models;
  * @author Vivek
  */
 public class Appeal {
+    private String student;
     private String appeal;
     private AppealStatus status;
     
@@ -27,4 +28,12 @@ public class Appeal {
     public void setStatus(AppealStatus status) {
         this.status = status;
     }
+
+    public String getStudent() {
+        return student;
+    }
+
+    public void setStudent(String student) {
+        this.student = student;
+    }  
 }

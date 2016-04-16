@@ -17,25 +17,34 @@ import javax.enterprise.context.ApplicationScoped;
  */
 @ApplicationScoped
 public class AppealsStorage {
+
     private HashMap<String, Appeal> appeals;
-    
-    public AppealsStorage(){
+
+    public AppealsStorage() {
         appeals = new HashMap<>();
     }
-    
-    public void addAppeal(String studentName, Appeal appeal){
-        appeals.put(studentName, appeal);
+
+    public void addAppeal(String appealId, Appeal appeal) {
+        appeals.put(appealId, appeal);
     }
-    
-    public Appeal getAppeal(String studentName){
+
+    public Appeal getAppeal(String studentName) {
         return appeals.get(studentName);
     }
-    
-    public void deleteAppeal(String studentName){
+
+    public void deleteAppeal(String studentName) {
         appeals.remove(studentName);
     }
-    
-    public Set getAllAppeals(){
+
+    public Set getAllAppeals() {
         return appeals.keySet();
+    }
+
+    public boolean containsKey(String key) {
+        return appeals.containsKey(key);
+    }
+
+    public void clearAppealsStorage() {
+        appeals = new HashMap<>();
     }
 }

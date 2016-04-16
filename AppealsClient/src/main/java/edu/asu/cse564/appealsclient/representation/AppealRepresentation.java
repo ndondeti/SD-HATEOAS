@@ -44,4 +44,8 @@ public class AppealRepresentation extends Representation {
     public Link getUpdateStatusLink() {
         return getLinkByName("setAppealStatus");
     }
+    
+    public Link getUpdateGradeLink(){
+        return getLinkByName("updateGrade");
+    }
 }
