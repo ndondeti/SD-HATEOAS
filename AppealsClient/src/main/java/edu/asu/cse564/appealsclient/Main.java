@@ -305,6 +305,8 @@ public class Main {
             String wrongUri = uri.substring(0, uri.length() - 1) + "5";
             System.out.println("6) Student checks the appeal again to check for any updates but uses the wrong appealId to access the resource");
             System.out.println("the wrong url " + wrongUri);
+            System.out.println();
+            System.out.println("The response");
             AppealRepresentation getAppealRep = client.getAppeal(new URI(wrongUri));
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
